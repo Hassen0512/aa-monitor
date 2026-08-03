@@ -1,0 +1,16 @@
+# 股票分析报告文件夹（数据量大，不上传）
+A持有区/
+B优质待入手区/
+C成长观察区/
+dashboard/
+server.py
+generate_detail_html.ps1
+update_index.ps1
+
+# Python
+__pycache__/
+*.pyc
+
+# 临时文件
+*.pkl
+*.tmp
