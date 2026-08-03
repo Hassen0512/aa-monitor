@@ -1,0 +1,24 @@
+﻿[
+    {
+        "watch_total":  0,
+        "id":  "weekly-2026-08-03",
+        "type":  "weekly",
+        "growth_total":  0,
+        "snippet":  "\u003e 本周无变化，所有标的继续观察。",
+        "date":  "2026-08-03",
+        "holding_alert":  0,
+        "holding_ok":  0,
+        "watch_near":  0
+    },
+    {
+        "watch_total":  1,
+        "id":  "2026-08-03",
+        "type":  "daily",
+        "growth_total":  0,
+        "snippet":  "\u003e 持有区全部正常。",
+        "date":  "2026-08-03",
+        "holding_alert":  0,
+        "holding_ok":  1,
+        "watch_near":  0
+    }
+]
