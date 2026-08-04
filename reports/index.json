@@ -50,9 +50,9 @@
     "crit": 0,
     "warn": 0,
     "chance": 0,
-    "holding_ok": 0,
+    "holding_ok": 1,
     "holding_alert": 0,
     "watch_near": 0,
-    "watch_total": 0
+    "watch_total": 1
   }
 ]
