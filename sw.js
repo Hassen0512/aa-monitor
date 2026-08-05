@@ -1,5 +1,6 @@
 // Service Worker for AA Portfolio Monitor PWA
-const CACHE = 'aa-monitor-v2';
+// App shell = cache-first (offline ready); report data = network-first (always fresh online)
+const CACHE = 'aa-monitor-v3';
 const PRE_CACHE = ['./', './index.html', './manifest.json', './reports/index.json'];
 
 self.addEventListener('install', e => {
@@ -20,7 +21,8 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  e.respondWith(cacheFirst(e.request));
+  const isData = new URL(e.request.url).pathname.includes('/reports/');
+  e.respondWith(isData ? networkFirst(e.request) : cacheFirst(e.request));
 });
 
 async function cacheFirst(request) {
@@ -35,5 +37,19 @@ async function cacheFirst(request) {
     return resp;
   } catch (e) {
     return new Response('Offline', { status: 503 });
+  }
+}
+
+async function networkFirst(request) {
+  try {
+    const resp = await fetch(request);
+    if (resp.ok) {
+      const cache = await caches.open(CACHE);
+      cache.put(request, resp.clone());
+    }
+    return resp;
+  } catch (e) {
+    const cached = await caches.match(request);
+    return cached || new Response('Offline', { status: 503 });
   }
 }
