@@ -74,6 +74,25 @@
     color: var(--accent); background: var(--accent-soft);
     padding: 4px 10px; border-radius: 20px;
   }
+  .topbar-right {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .refresh-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--accent);
+    font-size: 15px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .refresh-btn:active { transform: scale(0.9); }
+  .refresh-btn.spinning { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ── Summary Cards ── */
   .summary-row {
@@ -411,7 +430,10 @@
     <div class="logo">📊</div>
     <h1>持仓监控看台</h1>
   </div>
-  <div class="badge" id="updateTime">加载中…</div>
+  <div class="topbar-right">
+    <div class="badge" id="updateTime">加载中…</div>
+    <button class="refresh-btn" id="refreshBtn" onclick="refresh()" aria-label="刷新最新内容" title="刷新">⟳</button>
+  </div>
 </div>
 
 <div class="summary-row" id="summaryRow"></div>
@@ -533,6 +555,20 @@ function renderList() {
         <div class="arrow">›</div>
       </div>`;
   }).join('');
+}
+
+// ── Refresh ──
+let refreshing = false;
+async function refresh() {
+  if (refreshing) return;
+  refreshing = true;
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  await loadReports();
+  setTimeout(() => {
+    btn.classList.remove('spinning');
+    refreshing = false;
+  }, 400);
 }
 
 // ── Filter ──
