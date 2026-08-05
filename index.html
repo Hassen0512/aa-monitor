@@ -446,6 +446,11 @@ let reports = [];
 let currentFilter = 'all';
 let readSet = new Set(JSON.parse(localStorage.getItem('pwa_read') || '[]'));
 
+// Auto-refresh report list when app returns to foreground
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) loadReports();
+});
+
 // ── Load ──
 async function loadReports() {
   try {
