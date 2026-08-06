@@ -28,6 +28,20 @@
     "watch_total": 0
   },
   {
+    "id": "2026-08-06",
+    "date": "2026-08-06",
+    "type": "daily",
+    "snippet": "分众传媒 跌破 MA20（5.17）",
+    "level": "warning",
+    "crit": 0,
+    "warn": 3,
+    "chance": 0,
+    "holding_ok": 0,
+    "holding_alert": 1,
+    "watch_near": 0,
+    "watch_total": 1
+  },
+  {
     "id": "2026-08-05",
     "date": "2026-08-05",
     "type": "daily",
