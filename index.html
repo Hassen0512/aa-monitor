@@ -2,363 +2,238 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="持仓看台">
-<meta name="theme-color" content="#f8fafb">
-<title>AA 持仓监控看台</title>
+<meta name="theme-color" content="#0f172a">
+<title>持仓看台</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  :root {
-    --bg:        #f8fafb;
-    --bg-card:   #ffffff;
-    --bg-hover:  #f1f5f7;
-    --border:    #e8ecf0;
-    --text:      #2c3e50;
-    --text-dim:  #8899a8;
-    --text-muted:#b0bec5;
-    --accent:    #0ea5a0;
-    --accent-soft:#e0f5f4;
-    --red:       #e85d5d;
-    --red-soft:  #fef0f0;
-    --amber:     #e8a838;
-    --amber-soft:#fef9ee;
-    --green:     #3cb878;
-    --green-soft:#edf8f2;
-    --blue:      #5b9bd5;
-    --blue-soft: #eef5fb;
-    --shadow:    0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
-    --radius:    14px;
-    --radius-sm: 10px;
-    --font:      -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
-    --mono:      "SF Mono", "Cascadia Code", "Consolas", monospace;
-  }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f1f5f9;--bg-card:#fff;--text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;
+  --red:#ef4444;--red-bg:#fef2f2;--red-border:#fecaca;
+  --amber:#f59e0b;--amber-bg:#fffbeb;--amber-border:#fde68a;
+  --green:#10b981;--green-bg:#ecfdf5;--green-border:#a7f3d0;
+  --blue:#3b82f6;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
+  --radius:12px;--radius-lg:16px;
+  --shadow:0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -2px rgba(0,0,0,.05);
+  --font:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom,16px);
+}
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    padding-bottom: env(safe-area-inset-bottom, 20px);
-    -webkit-font-smoothing: antialiased;
-  }
+/* Header */
+header{
+  position:sticky;top:0;z-index:20;
+  background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
+  color:#fff;padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+header .logo{display:flex;align-items:center;gap:10px}
+header .logo .icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,#3b82f6,#06b6d4);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+header h1{font-size:17px;font-weight:700;letter-spacing:-.3px}
+header .status{
+  font-size:11px;font-weight:500;opacity:.9;
+  display:flex;align-items:center;gap:5px;
+  cursor:pointer;padding:5px 10px;border-radius:20px;
+  background:rgba(255,255,255,.1);transition:background .2s;
+}
+header .status:active{background:rgba(255,255,255,.2)}
+header .status .dot{width:7px;height:7px;border-radius:50%;background:#10b981}
+header .status .dot.loading{background:#f59e0b;animation:pulse .8s infinite}
+@keyframes pulse{50%{opacity:.4}}
 
-  /* ── Header ── */
-  .topbar {
-    position: sticky; top:0; z-index:10;
-    background: rgba(248,250,251,0.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .topbar .brand {
-    display: flex; align-items: center; gap: 10px;
-  }
-  .topbar .brand .logo {
-    width: 34px; height: 34px;
-    border-radius: 9px;
-    background: linear-gradient(135deg, #0ea5a0 0%, #48c6ef 100%);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; color: #fff;
-  }
-  .topbar h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
-  .topbar .badge {
-    font-size: 11px; font-weight: 600;
-    color: var(--accent); background: var(--accent-soft);
-    padding: 4px 10px; border-radius: 20px;
-    cursor: pointer; transition: all 0.2s;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .topbar .badge:active { transform: scale(0.95); opacity: 0.8; }
-  .topbar .badge.refreshing { opacity: 0.6; pointer-events: none; }
+/* Summary Cards */
+.summary{padding:16px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.summary-card{
+  background:var(--bg-card);border-radius:var(--radius-lg);
+  padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);
+  position:relative;overflow:hidden;transition:transform .15s;
+}
+.summary-card:active{transform:scale(.97)}
+.summary-card .card-icon{font-size:22px;margin-bottom:8px}
+.summary-card .card-value{font-size:28px;font-weight:800;letter-spacing:-.5px;line-height:1}
+.summary-card .card-label{font-size:12px;color:var(--text2);margin-top:4px}
+.summary-card .card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.summary-card::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:3px 0 0 3px}
+.summary-card.holding{--accent:var(--red)}
+.summary-card.watch{--accent:var(--amber)}
+.summary-card.holding .card-value{color:var(--red)}
+.summary-card.watch .card-value{color:var(--amber)}
+.summary-card::after{background:var(--accent)}
 
-  /* ── Refresh indicator ── */
-  .refresh-bar {
-    text-align: center; padding: 4px; font-size: 11px;
-    color: var(--accent); background: var(--accent-soft);
-    display: none; transition: all 0.2s;
-  }
-  .refresh-bar.show { display: block; animation: pulse 0.6s ease infinite alternate; }
-  @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
+/* Section */
+.section{padding:8px 14px 2px;display:flex;align-items:center;justify-content:space-between}
+.section h2{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:.5px}
+.section .tabs{display:flex;gap:4px}
+.section .tabs button{
+  font-family:var(--font);font-size:11px;font-weight:600;padding:4px 10px;
+  border-radius:14px;border:1px solid var(--border);background:var(--bg-card);
+  color:var(--text3);cursor:pointer;transition:all .15s;
+}
+.section .tabs button.on{background:var(--text);color:#fff;border-color:var(--text)}
 
-  /* ── Pull-to-refresh ── */
-  .ptr-indicator {
-    text-align: center; font-size: 12px; color: var(--text-muted);
-    padding: 8px; display: none;
-  }
-  .ptr-indicator.pulling { display: block; }
-  .ptr-indicator .ptr-icon { display: inline-block; transition: transform 0.2s; }
-  .ptr-indicator.flip .ptr-icon { transform: rotate(180deg); }
+/* Report List */
+.report-list{padding:8px 14px 24px;display:flex;flex-direction:column;gap:8px}
+.report-card{
+  background:var(--bg-card);border-radius:var(--radius-lg);padding:14px 16px;
+  border:1px solid var(--border);box-shadow:var(--shadow);
+  cursor:pointer;display:flex;align-items:center;gap:12px;
+  transition:all .15s;position:relative;
+}
+.report-card:active{transform:scale(.985);background:#f8fafc}
+.report-card .new-dot{
+  position:absolute;top:12px;right:12px;
+  width:7px;height:7px;border-radius:50%;background:var(--red);
+}
+.report-card .type-icon{
+  width:40px;height:40px;border-radius:12px;display:flex;
+  align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+}
+.report-card .type-icon.daily{background:var(--blue-bg)}
+.report-card .type-icon.weekly{background:var(--green-bg)}
+.report-card .card-info{flex:1;min-width:0}
+.report-card .card-info .date-row{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.report-card .card-info .date-row .tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px}
+.tag-daily{color:var(--blue);background:var(--blue-bg)}
+.tag-weekly{color:var(--green);background:var(--green-bg)}
+.report-card .card-info .preview{font-size:12px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.report-card .level-badge{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.level-badge.critical{background:var(--red)}
+.level-badge.warning{background:var(--amber)}
+.level-badge.chance{background:var(--green)}
+.level-badge.ok{background:#cbd5e1}
 
-  /* ── Summary Cards ── */
-  .summary-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    padding: 18px 20px 8px;
-  }
-  .stat-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 16px 14px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    transition: transform 0.15s;
-  }
-  .stat-card:active { transform: scale(0.97); }
-  .stat-card .stat-icon { font-size: 22px; margin-bottom: 6px; }
-  .stat-card .stat-value { font-size: 26px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
-  .stat-card .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
-  .stat-card .stat-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-  .stat-card.holding .stat-value { color: var(--red); }
-  .stat-card.watch .stat-value { color: var(--amber); }
-  .stat-card.growth .stat-value { color: var(--green); }
+/* Modal */
+.modal-overlay{
+  position:fixed;inset:0;z-index:100;background:rgba(15,23,42,.5);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:flex;align-items:flex-end;justify-content:center;
+  animation:fadeIn .2s ease;
+}
+.modal-overlay.closing{animation:fadeOut .15s ease forwards}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+.modal-sheet{
+  background:#fff;border-radius:20px 20px 0 0;
+  width:100%;max-width:720px;max-height:90vh;
+  display:flex;flex-direction:column;
+  animation:slideUp .3s cubic-bezier(.16,1,.3,1);
+  box-shadow:0 -8px 40px rgba(0,0,0,.15);
+}
+.modal-sheet.closing{animation:slideDown .2s cubic-bezier(.5,0,.75,0) forwards}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes slideDown{from{transform:translateY(0)}to{transform:translateY(100%)}}
+.modal-handle{width:36px;height:4px;background:#dde3e8;border-radius:2px;margin:10px auto 6px}
+.modal-header{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.modal-header h3{font-size:16px;font-weight:700}
+.modal-close{width:30px;height:30px;border-radius:50%;border:none;background:#f1f5f9;font-size:18px;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-content{flex:1;overflow-y:auto;padding:16px 18px;-webkit-overflow-scrolling:touch}
 
-  /* ── Section title ── */
-  .section {
-    padding: 8px 20px 4px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .section h2 {
-    font-size: 14px; font-weight: 700;
-    color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 1px;
-  }
-  .section .filter-tabs {
-    display: flex; gap: 6px;
-  }
-  .filter-tabs button {
-    font-family: var(--font);
-    font-size: 12px; font-weight: 600;
-    padding: 5px 12px; border-radius: 16px;
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .filter-tabs button.active {
-    background: var(--text);
-    color: #fff;
-    border-color: var(--text);
-  }
+/* Report content */
+.modal-content h2{font-size:15px;font-weight:700;margin:18px 0 10px;display:flex;align-items:center;gap:6px}
+.modal-content h3{font-size:14px;font-weight:600;margin:14px 0 6px}
+.modal-content table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0 12px}
+.modal-content th{text-align:left;padding:7px 8px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);background:#f8fafc}
+.modal-content td{padding:8px;border-bottom:1px solid #f1f5f9;font-variant-numeric:tabular-nums}
+.modal-content tr:last-child td{border-bottom:none}
+.modal-content td:first-child{font-size:16px;width:28px;text-align:center}
+.modal-content td:nth-child(2){font-weight:600}
+.modal-content .up{color:var(--red);font-weight:600}
+.modal-content .down{color:var(--green);font-weight:600}
+.modal-content .muted{color:var(--text3)}
+.modal-content .good{color:var(--green)}
+.modal-content .bad{color:var(--red)}
+.modal-content blockquote{margin:10px 0;padding:10px 14px;border-radius:8px;font-size:13px;line-height:1.6;border-left:3px solid var(--border)}
+.modal-content blockquote.crit{background:var(--red-bg);border-color:var(--red);color:#991b1b}
+.modal-content blockquote.warn{background:var(--amber-bg);border-color:var(--amber);color:#92400e}
+.modal-content blockquote.chance{background:var(--green-bg);border-color:var(--green);color:#065f46}
+.modal-content blockquote.info{background:var(--blue-bg);border-color:var(--blue);color:#1e40af}
+.modal-content blockquote.ok{background:#f8fafc;border-color:#cbd5e1}
+.modal-content .banner{margin:6px 0 10px;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.7}
+.modal-content .banner-title{font-weight:700;margin-bottom:4px}
+.modal-content .banner-crit{background:var(--red-bg);border:1px solid var(--red-border)}
+.modal-content .banner-crit .banner-title{color:var(--red)}
+.modal-content .banner-warn{background:var(--amber-bg);border:1px solid var(--amber-border)}
+.modal-content .banner-warn .banner-title{color:var(--amber)}
+.modal-content .banner-chance{background:var(--green-bg);border:1px solid var(--green-border)}
+.modal-content .banner-chance .banner-title{color:var(--green)}
+.modal-content .note{padding:6px 12px;border-radius:6px;font-size:12px;margin:4px 0;line-height:1.5}
+.modal-content .note-crit{background:var(--red-bg);color:#991b1b}
+.modal-content .note-warn{background:var(--amber-bg);color:#92400e}
+.modal-content .note-chance{background:var(--green-bg);color:#065f46}
+.modal-content .note-ok{color:var(--text2)}
+.modal-content .note-info{color:var(--text2)}
+.modal-content .bullet{padding:2px 0;font-size:13px;color:var(--text2)}
+.modal-content .bullet.sub{padding-left:16px;font-size:12px}
+.modal-content .zone-head{font-size:14px;font-weight:700;padding:6px 10px;margin:10px 0 6px;border-left:4px solid;border-radius:0 6px 6px 0;background:#f8fafc}
+.modal-content .sec-head{font-size:14px;font-weight:700;margin:10px 0 6px;color:var(--text)}
+.modal-content .stock-name{font-size:14px;font-weight:600;padding:4px 0}
+.modal-content .stock-name .ic{margin-right:4px}
+.modal-content .para{font-size:13px;color:var(--text2);line-height:1.6;padding:2px 0}
+.modal-content .strong-line{font-weight:600;padding:4px 0;font-size:13px}
+.modal-content details{margin:10px 0}
+.modal-content summary{font-size:13px;font-weight:600;cursor:pointer;color:var(--blue)}
+.modal-content .gl-item{margin:8px 0}
+.modal-content .gl-name{font-weight:700;font-size:13px}
+.modal-content .gl-what{font-size:12px;color:var(--text2)}
+.modal-content .gl-how{font-size:12px;color:var(--text3);font-style:italic}
 
-  /* ── Report List ── */
-  .report-list {
-    padding: 8px 20px 30px;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .report-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 18px;
-    cursor: pointer;
-    box-shadow: var(--shadow);
-    transition: all 0.15s;
-    display: flex; align-items: center; gap: 14px;
-    position: relative;
-  }
-  .report-card:active { transform: scale(0.985); background: var(--bg-hover); }
-  .report-card .dot {
-    position: absolute;
-    top: 16px; right: 16px;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--red);
-  }
-  .report-card .type-badge {
-    width: 42px; height: 42px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .report-card .type-daily { background: var(--blue-soft); }
-  .report-card .type-weekly { background: var(--green-soft); }
-  .report-card .card-body { flex:1; min-width:0; }
-  .report-card .card-body .date {
-    font-size: 15px; font-weight: 700; letter-spacing: -0.2px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .report-card .card-body .date .tag {
-    font-size: 10px; font-weight: 600;
-    padding: 2px 8px; border-radius: 10px;
-  }
-  .tag-daily { color: var(--blue); background: var(--blue-soft); }
-  .tag-weekly { color: var(--green); background: var(--green-soft); }
-  .report-card .card-body .snippet {
-    font-size: 13px; color: var(--text-dim);
-    margin-top: 4px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .report-card .arrow { color: var(--text-muted); font-size: 18px; flex-shrink:0; }
+/* Empty / Loading */
+.empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty .empty-icon{font-size:40px;margin-bottom:10px;opacity:.5}
+.empty p{font-size:13px}
+.loading-row{display:flex;align-items:center;justify-content:center;padding:30px;gap:10px}
+.spinner{width:20px;height:20px;border:2.5px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  /* ── Detail Modal ── */
-  .modal-overlay {
-    position: fixed; inset:0; z-index:100;
-    background: rgba(15,20,30,0.4);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    display: flex; align-items: flex-end; justify-content: center;
-    animation: fadeIn 0.2s ease;
-  }
-  .modal-overlay.closing { animation: fadeOut 0.15s ease forwards; }
-  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-  @keyframes fadeOut { from{opacity:1} to{opacity:0} }
-
-  .modal-sheet {
-    background: var(--bg-card);
-    border-radius: 20px 20px 0 0;
-    width: 100%; max-width: 720px; max-height: 88vh;
-    display: flex; flex-direction: column;
-    animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
-    box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
-  }
-  .modal-sheet.closing { animation: slideDown 0.2s cubic-bezier(0.5,0,0.75,0) forwards; }
-  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-  @keyframes slideDown { from{transform:translateY(0)} to{transform:translateY(100%)} }
-
-  .modal-handle {
-    width: 36px; height: 4px;
-    background: #dde3e8; border-radius: 2px;
-    margin: 10px auto 0;
-  }
-  .modal-header {
-    padding: 12px 20px 10px;
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-  .modal-header h3 { font-size: 16px; font-weight: 700; }
-  .modal-close {
-    width: 30px; height: 30px;
-    border-radius: 50%; border: none;
-    background: var(--bg-hover);
-    font-size: 16px; color: var(--text-dim);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
-  .modal-content {
-    flex:1; overflow-y:auto; padding: 20px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .modal-content .zone-section { margin-bottom: 24px; }
-  .modal-content .zone-section:last-child { margin-bottom: 0; }
-  .modal-content .zone-title {
-    font-size: 15px; font-weight: 700; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .modal-content .zone-title .z-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-  }
-  .modal-content table {
-    width: 100%; border-collapse: collapse; font-size: 13px;
-  }
-  .modal-content th {
-    text-align: left; padding: 8px 10px;
-    font-size: 10px; font-weight: 600; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--border);
-  }
-  .modal-content td {
-    padding: 10px;
-    border-bottom: 1px solid #f0f3f5;
-    font-variant-numeric: tabular-nums;
-  }
-  .modal-content td:first-child { font-size: 16px; width: 32px; }
-  .modal-content td:nth-child(2) { font-weight: 600; }
-  .modal-content .up { color: var(--red); }
-  .modal-content .down { color: var(--green); }
-  .modal-content .muted { color: var(--text-muted); }
-  .modal-content .alert-box {
-    padding: 12px 14px; border-radius: 10px;
-    font-size: 13px; line-height: 1.7; margin-top: 8px;
-  }
-  .modal-content .alert-ok {
-    background: var(--green-soft);
-    border: 1px solid #d4ede1;
-    color: #3cb878;
-  }
-  .modal-content .alert-warn {
-    background: var(--amber-soft);
-    border: 1px solid #f5e6c8;
-    color: #c8892a;
-  }
-  .modal-content .alert-danger {
-    background: var(--red-soft);
-    border: 1px solid #f5dada;
-    color: #c0392b;
-  }
-  .modal-summary {
-    margin-top: 20px; padding-top: 16px;
-    border-top: 1px solid var(--border);
-    font-size: 14px; color: var(--text-dim);
-    line-height: 1.8;
-  }
-
-  /* ── Empty state ── */
-  .empty {
-    text-align: center; padding: 60px 20px; color: var(--text-muted);
-  }
-  .empty .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
-  .empty p { font-size: 14px; }
-
-  /* ── Loading ── */
-  .loading {
-    text-align: center; padding: 40px; color: var(--text-muted);
-  }
-  .spinner {
-    width: 28px; height: 28px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin: 0 auto 12px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── Responsive ── */
-  @media (min-width: 600px) {
-    .summary-row { padding: 20px 32px 8px; gap: 14px; }
-    .section { padding: 8px 32px 4px; }
-    .report-list { padding: 8px 32px 30px; }
-    .topbar { padding: 14px 32px; }
-  }
+@media(min-width:600px){
+  .summary{grid-template-columns:1fr 1fr 1fr;padding:20px 24px 8px;gap:14px}
+  .section{padding:8px 24px 2px}
+  .report-list{padding:8px 24px 24px}
+  header{padding:14px 24px}
+}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand">
-    <div class="logo">📊</div>
-    <h1>持仓监控看台</h1>
+<header>
+  <div class="logo">
+    <div class="icon">📊</div>
+    <h1>持仓看台</h1>
   </div>
-  <div class="badge" id="updateTime" onclick="refreshReports()" title="点击刷新">加载中…</div>
-</div>
+  <div class="status" id="statusBar" onclick="refreshReports()">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">加载中</span>
+  </div>
+</header>
 
-<div class="refresh-bar" id="refreshBar">⟳ 正在刷新…</div>
-<div class="ptr-indicator" id="ptrIndicator"><span class="ptr-icon">↓</span> 下拉刷新</div>
-
-<div class="summary-row" id="summaryRow"></div>
+<div class="summary" id="summaryRow"></div>
 
 <div class="section">
   <h2>历史报告</h2>
-  <div class="filter-tabs">
-    <button class="active" data-filter="all">全部</button>
+  <div class="tabs">
+    <button class="on" data-filter="all">全部</button>
     <button data-filter="daily">日报</button>
     <button data-filter="weekly">周报</button>
   </div>
 </div>
 
 <div class="report-list" id="reportList">
-  <div class="loading"><div class="spinner"></div><p>加载报告中…</p></div>
+  <div class="loading-row"><div class="spinner"></div><span style="color:var(--text3);font-size:13px">加载中…</span></div>
 </div>
 
 <div class="modal-overlay" id="modal" style="display:none" onclick="closeModal(event)">
@@ -366,212 +241,139 @@
     <div class="modal-handle"></div>
     <div class="modal-header">
       <h3 id="modalTitle"></h3>
-      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-content" id="modalContent"></div>
   </div>
 </div>
 
 <script>
-// ── State ──
-let reports = [];
-let currentFilter = 'all';
-let readSet = new Set(JSON.parse(localStorage.getItem('pwa_read') || '[]'));
+let reports=[],filter='all';
+let readSet=new Set(JSON.parse(localStorage.getItem('pmon_read')||'[]'));
 
-// ── Load ──
-async function loadReports() {
-  try {
-    const res = await fetch('api/reports');
-    reports = await res.json();
+async function loadReports(){
+  try{
+    const r=await fetch('reports/index.json',{cache:'no-cache'});
+    reports=await r.json();
     render();
-  } catch (e) {
-    document.getElementById('reportList').innerHTML =
-      '<div class="empty"><div class="empty-icon">📭</div><p>无法加载报告<br><small>请确认服务已启动</small></p></div>';
+    document.getElementById('statusDot').classList.remove('loading');
+    document.getElementById('statusText').textContent='已连接';
+  }catch(e){
+    document.getElementById('reportList').innerHTML='<div class="empty"><div class="empty-icon">📭</div><p>无法加载报告</p></div>';
+    document.getElementById('statusDot').classList.remove('loading');
+    document.getElementById('statusText').textContent='离线';
   }
 }
 
-// ── Render ──
-function render() {
-  renderSummary();
-  renderList();
+function render(){renderSummary();renderList()}
+
+function renderSummary(){
+  const latest=reports.find(r=>r.type==='daily')||{};
+  const el=document.getElementById('summaryRow');
+  el.innerHTML=
+    '<div class="summary-card holding">'+
+      '<div class="card-icon">🔴</div>'+
+      '<div class="card-value">'+(latest.holding_ok||'—')+'</div>'+
+      '<div class="card-label">持仓正常</div>'+
+      '<div class="card-sub">'+(latest.holding_alert||0)+' 预警</div>'+
+    '</div>'+
+    '<div class="summary-card watch">'+
+      '<div class="card-icon">🟡</div>'+
+      '<div class="card-value">'+(latest.watch_near||'—')+'</div>'+
+      '<div class="card-label">接近买点</div>'+
+      '<div class="card-sub">共 '+(latest.watch_total||'—')+' 只关注</div>'+
+    '</div>'+
+    '<div class="summary-card" style="--accent:var(--blue)">'+
+      '<div class="card-icon">📋</div>'+
+      '<div class="card-value" style="color:var(--blue)">'+reports.length+'</div>'+
+      '<div class="card-label">历史报告</div>'+
+      '<div class="card-sub">'+reports.filter(function(r){return r.type==='daily'}).length+' 日报 · '+reports.filter(function(r){return r.type==='weekly'}).length+' 周报</div>'+
+    '</div>';
 }
 
-function renderSummary() {
-  const latest = reports.find(r => r.type === 'daily') || {};
-  const el = document.getElementById('summaryRow');
-  el.innerHTML = `
-    <div class="stat-card holding">
-      <div class="stat-icon">🔴</div>
-      <div class="stat-value">${latest.holding_ok || 0}</div>
-      <div class="stat-label">持有正常</div>
-      <div class="stat-sub">${latest.holding_alert || 0} 预警</div>
-    </div>
-    <div class="stat-card watch">
-      <div class="stat-icon">🟡</div>
-      <div class="stat-value">${latest.watch_near || 0}</div>
-      <div class="stat-label">接近买点</div>
-      <div class="stat-sub">${latest.watch_total || 0} 只关注</div>
-    </div>
-    <div class="stat-card growth">
-      <div class="stat-icon">🟢</div>
-      <div class="stat-value">${latest.growth_total || reports.filter(r=>r.type==='weekly').length || 0}</div>
-      <div class="stat-label">观察中</div>
-      <div class="stat-sub">成长观察区</div>
-    </div>`;
+function renderList(){
+  var filtered=filter==='all'?reports:reports.filter(function(r){return r.type===filter});
+  var el=document.getElementById('reportList');
+  if(!filtered.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><p>暂无报告</p></div>';return}
 
-  // Update time
-  const dt = latest.date || (reports[0] && reports[0].date) || '';
-  document.getElementById('updateTime').textContent = dt ? '更新 ' + dt : '暂无数据';
-}
-
-function renderList() {
-  const filtered = currentFilter === 'all'
-    ? reports
-    : reports.filter(r => r.type === currentFilter);
-
-  const el = document.getElementById('reportList');
-  if (filtered.length === 0) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>暂无报告</p></div>';
-    return;
-  }
-
-  el.innerHTML = filtered.map(r => {
-    const isNew = r.type === 'daily' && !readSet.has(r.id);
-    const isWeekly = r.type === 'weekly';
-    return `
-      <div class="report-card" onclick="openReport('${r.id}')">
-        ${isNew ? '<div class="dot"></div>' : ''}
-        <div class="type-badge ${isWeekly ? 'type-weekly' : 'type-daily'}">
-          ${isWeekly ? '🟢' : '📅'}
-        </div>
-        <div class="card-body">
-          <div class="date">
-            ${isWeekly ? '周报' : '日报'} · ${r.date}
-            <span class="tag ${isWeekly ? 'tag-weekly' : 'tag-daily'}">
-              ${isWeekly ? '周报' : '日报'}
-            </span>
-          </div>
-          <div class="snippet">${r.snippet || ''}</div>
-        </div>
-        <div class="arrow">›</div>
-      </div>`;
+  el.innerHTML=filtered.map(function(r){
+    var isNew=r.type==='daily'&&!readSet.has(r.id);
+    var isWeekly=r.type==='weekly';
+    var cls='ok',preview=r.snippet||'无异常';
+    if(r.level==='critical'){cls='critical';preview='🚨 '+preview}
+    else if(r.level==='chance'){cls='chance';preview='🔥 '+preview}
+    else if(r.level==='warning'){cls='warning';preview='⚠️ '+preview}
+    return '<div class="report-card" onclick="openReport(\''+r.id+'\')">'+
+      (isNew?'<div class="new-dot"></div>':'')+
+      '<div class="type-icon '+(isWeekly?'weekly':'daily')+'">'+(isWeekly?'🗓️':'📅')+'</div>'+
+      '<div class="card-info">'+
+        '<div class="date-row">'+(isWeekly?'周报':'日报')+' · '+r.date+
+          '<span class="tag '+(isWeekly?'tag-weekly':'tag-daily')+'">'+(isWeekly?'周':'日')+'</span>'+
+        '</div>'+
+        '<div class="preview">'+preview+'</div>'+
+      '</div>'+
+      '<div class="level-badge '+cls+'"></div>'+
+    '</div>';
   }).join('');
 }
 
-// ── Filter ──
-document.querySelectorAll('.filter-tabs button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-tabs button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentFilter = btn.dataset.filter;
-    renderList();
-  });
+// Filter buttons
+document.querySelector('.tabs').addEventListener('click',function(e){
+  if(e.target.tagName!=='BUTTON')return;
+  document.querySelectorAll('.tabs button').forEach(function(b){b.classList.remove('on')});
+  e.target.classList.add('on');
+  filter=e.target.dataset.filter;
+  renderList();
 });
 
-// ── Open Report ──
-async function openReport(id) {
-  const r = reports.find(x => x.id === id);
-  if (!r) return;
+// Open Report
+async function openReport(id){
+  var r=reports.find(function(x){return x.id===id});
+  if(!r)return;
+  if(r.type==='daily'){readSet.add(id);localStorage.setItem('pmon_read',JSON.stringify(Array.from(readSet)))}
 
-  // Mark as read
-  if (r.type === 'daily') {
-    readSet.add(id);
-    localStorage.setItem('pwa_read', JSON.stringify([...readSet]));
+  document.getElementById('modalTitle').textContent=(r.type==='weekly'?'周报':'日报')+' · '+r.date;
+  document.getElementById('modalContent').innerHTML='<div class="loading-row"><div class="spinner"></div></div>';
+
+  try{
+    var res=await fetch('reports/'+id+'.html',{cache:'no-cache'});
+    var html=await res.text();
+    document.getElementById('modalContent').innerHTML=html||'<div class="empty"><p>暂无内容</p></div>';
+  }catch(e){
+    document.getElementById('modalContent').innerHTML='<div class="empty"><p>加载失败</p></div>';
   }
 
-  const modal = document.getElementById('modal');
-  document.getElementById('modalTitle').textContent =
-    (r.type === 'weekly' ? '周报 · ' : '日报 · ') + r.date;
-
-  try {
-    const res = await fetch('api/report/' + id);
-    const html = await res.text();
-    document.getElementById('modalContent').innerHTML = html;
-  } catch (e) {
-    document.getElementById('modalContent').innerHTML =
-      '<div class="empty"><p>加载失败</p></div>';
-  }
-
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  renderList(); // update dot
+  var modal=document.getElementById('modal');
+  modal.style.display='flex';document.body.style.overflow='hidden';
+  renderList();
 }
 
-// ── Close Modal ──
-function closeModal(e) {
-  if (e && e.target !== document.getElementById('modal')) return;
-  const modal = document.getElementById('modal');
-  const sheet = document.getElementById('modalSheet');
-  sheet.classList.add('closing');
-  modal.classList.add('closing');
-  setTimeout(() => {
-    modal.style.display = 'none';
-    sheet.classList.remove('closing');
-    modal.classList.remove('closing');
-    document.body.style.overflow = '';
-  }, 180);
+// Close Modal
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal'))return;
+  var modal=document.getElementById('modal'),sheet=document.getElementById('modalSheet');
+  sheet.classList.add('closing');modal.classList.add('closing');
+  setTimeout(function(){
+    modal.style.display='none';sheet.classList.remove('closing');modal.classList.remove('closing');
+    document.body.style.overflow='';
+  },180);
 }
 
-// ── Refresh ──
-async function refreshReports() {
-  const badge = document.getElementById('updateTime');
-  const bar = document.getElementById('refreshBar');
-  badge.classList.add('refreshing');
-  badge.textContent = '⟳ 刷新中…';
-  bar.classList.add('show');
-
-  try {
-    await loadReports();
-    badge.classList.remove('refreshing');
-    const latest = reports.find(r => r.type === 'daily') || reports[0] || {};
-    const dt = latest.date || '';
-    badge.textContent = '✅ ' + dt;
-    setTimeout(() => {
-      badge.textContent = dt ? '查看 ' + dt : '暂无数据';
-    }, 2000);
-  } catch (e) {
-    badge.classList.remove('refreshing');
-    badge.textContent = '❌ 失败';
-  }
-  bar.classList.remove('show');
+// Refresh
+async function refreshReports(){
+  var dot=document.getElementById('statusDot'),txt=document.getElementById('statusText');
+  dot.classList.add('loading');txt.textContent='刷新中…';
+  try{await loadReports();dot.classList.remove('loading');txt.textContent='已更新'}catch(e){txt.textContent='失败'}
 }
 
-// ── Pull-to-refresh ──
-let ptrStartY = 0;
-let ptrPulling = false;
-const ptrThreshold = 80;
-const ptrEl = document.getElementById('ptrIndicator');
+// Pull-to-refresh
+var ptrY=0,ptrOn=false;
+document.addEventListener('touchstart',function(e){if(!window.scrollY){ptrY=e.touches[0].clientY;ptrOn=true}},{passive:true});
+document.addEventListener('touchend',function(){if(ptrOn){ptrOn=false;if(window.scrollY<-40)refreshReports()}});
 
-document.addEventListener('touchstart', e => {
-  if (window.scrollY === 0) {
-    ptrStartY = e.touches[0].clientY;
-    ptrPulling = true;
-  }
-}, { passive: true });
-
-document.addEventListener('touchmove', e => {
-  if (!ptrPulling) return;
-  const dy = e.touches[0].clientY - ptrStartY;
-  if (dy > 20) {
-    ptrEl.classList.add('pulling');
-    if (dy > ptrThreshold) ptrEl.classList.add('flip');
-    else ptrEl.classList.remove('flip');
-  }
-}, { passive: true });
-
-document.addEventListener('touchend', () => {
-  if (!ptrPulling) return;
-  ptrPulling = false;
-  const wasFlipped = ptrEl.classList.contains('flip');
-  ptrEl.classList.remove('pulling', 'flip');
-  if (wasFlipped) refreshReports();
-});
-
-// ── Init ──
+// Init
 loadReports();
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
 </body>
 </html>
