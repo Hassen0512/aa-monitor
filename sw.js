@@ -1,7 +1,9 @@
 // Service Worker for AA Portfolio Monitor PWA
-// App shell = cache-first (offline ready); report data = network-first (always fresh online)
-const CACHE = 'aa-monitor-v3';
-const PRE_CACHE = ['./', './index.html', './manifest.json', './reports/index.json'];
+// Cache version bump forces update on all clients
+const CACHE = 'aa-monitor-v4';
+
+// Pre-cache reports index only (root page uses network-first)
+const PRE_CACHE = ['./manifest.json', './reports/index.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -21,8 +23,23 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  const isData = new URL(e.request.url).pathname.includes('/reports/');
-  e.respondWith(isData ? networkFirst(e.request) : cacheFirst(e.request));
+  const url = new URL(e.request.url);
+  const path = url.pathname;
+
+  // Root page: ALWAYS network-first (ensure latest dashboard)
+  if (path === '/' || path.endsWith('/') || path.endsWith('/index.html') || path === '/index.html') {
+    e.respondWith(networkFirst(e.request));
+    return;
+  }
+
+  // Report data: network-first
+  if (path.includes('/reports/')) {
+    e.respondWith(networkFirst(e.request));
+    return;
+  }
+
+  // Static assets (manifest, icons): cache-first for offline speed
+  e.respondWith(cacheFirst(e.request));
 });
 
 async function cacheFirst(request) {
@@ -42,7 +59,7 @@ async function cacheFirst(request) {
 
 async function networkFirst(request) {
   try {
-    const resp = await fetch(request);
+    const resp = await fetch(request, { cache: 'no-cache' });
     if (resp.ok) {
       const cache = await caches.open(CACHE);
       cache.put(request, resp.clone());
