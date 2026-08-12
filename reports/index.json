@@ -42,6 +42,20 @@
     "watch_total": 0
   },
   {
+    "id": "2026-08-12",
+    "date": "2026-08-12",
+    "type": "daily",
+    "snippet": "无异常",
+    "level": "ok",
+    "crit": 0,
+    "warn": 0,
+    "chance": 0,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
     "id": "2026-08-11",
     "date": "2026-08-11",
     "type": "daily",
