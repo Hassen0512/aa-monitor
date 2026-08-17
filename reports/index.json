@@ -42,6 +42,20 @@
     "watch_total": 0
   },
   {
+    "id": "2026-08-17",
+    "date": "2026-08-17",
+    "type": "daily",
+    "snippet": "出现买入机会",
+    "level": "chance",
+    "crit": 0,
+    "warn": 4,
+    "chance": 1,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
     "id": "2026-08-12",
     "date": "2026-08-12",
     "type": "daily",
