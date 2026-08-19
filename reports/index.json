@@ -42,6 +42,20 @@
     "watch_total": 0
   },
   {
+    "id": "2026-08-19",
+    "date": "2026-08-19",
+    "type": "daily",
+    "snippet": "分众传媒  买入价 4.96元  6手 跌破 MA60（5.06）",
+    "level": "warning",
+    "crit": 0,
+    "warn": 7,
+    "chance": 0,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
     "id": "2026-08-17",
     "date": "2026-08-17",
     "type": "daily",
