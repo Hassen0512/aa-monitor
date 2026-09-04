@@ -42,6 +42,20 @@
     "watch_total": 0
   },
   {
+    "id": "2026-09-04",
+    "date": "2026-09-04",
+    "type": "daily",
+    "snippet": "宁德时代 已进入买点区间（距目标 -2.5%）",
+    "level": "chance",
+    "crit": 0,
+    "warn": 13,
+    "chance": 7,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
     "id": "2026-09-03",
     "date": "2026-09-03",
     "type": "daily",
