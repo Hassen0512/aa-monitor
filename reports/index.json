@@ -42,6 +42,20 @@
     "watch_total": 0
   },
   {
+    "id": "2026-09-10",
+    "date": "2026-09-10",
+    "type": "daily",
+    "snippet": "分众传媒 跌破 MA60（4.93）",
+    "level": "warning",
+    "crit": 0,
+    "warn": 7,
+    "chance": 0,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
     "id": "2026-09-09",
     "date": "2026-09-09",
     "type": "daily",
