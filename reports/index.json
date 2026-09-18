@@ -42,6 +42,20 @@
     "watch_total": 0
   },
   {
+    "id": "2026-09-18",
+    "date": "2026-09-18",
+    "type": "daily",
+    "snippet": "紫金矿业 已进入买点区间（距目标 +3.0%）",
+    "level": "chance",
+    "crit": 0,
+    "warn": 10,
+    "chance": 6,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
     "id": "2026-09-17",
     "date": "2026-09-17",
     "type": "daily",
