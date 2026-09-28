@@ -42,6 +42,34 @@
     "watch_total": 0
   },
   {
+    "id": "2026-09-28",
+    "date": "2026-09-28",
+    "type": "daily",
+    "snippet": "万华化学 已进入买点区间（距目标 -0.9%）",
+    "level": "chance",
+    "crit": 0,
+    "warn": 13,
+    "chance": 7,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
+    "id": "2026-09-25",
+    "date": "2026-09-25",
+    "type": "daily",
+    "snippet": "无异常",
+    "level": "ok",
+    "crit": 0,
+    "warn": 0,
+    "chance": 0,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
     "id": "2026-09-24",
     "date": "2026-09-24",
     "type": "daily",
