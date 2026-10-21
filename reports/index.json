@@ -42,6 +42,20 @@
     "watch_total": 0
   },
   {
+    "id": "2026-10-21",
+    "date": "2026-10-21",
+    "type": "daily",
+    "snippet": "生益科技 已进入买点区间（距目标 +5.8%）",
+    "level": "chance",
+    "crit": 0,
+    "warn": 0,
+    "chance": 5,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
     "id": "2026-10-20",
     "date": "2026-10-20",
     "type": "daily",
