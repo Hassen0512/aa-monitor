@@ -42,6 +42,20 @@
     "watch_total": 0
   },
   {
+    "id": "2026-10-26",
+    "date": "2026-10-26",
+    "type": "daily",
+    "snippet": "中国西电-601179   持仓3手 跌破 MA60（12.53）",
+    "level": "warning",
+    "crit": 0,
+    "warn": 6,
+    "chance": 0,
+    "holding_ok": 0,
+    "holding_alert": 0,
+    "watch_near": 0,
+    "watch_total": 0
+  },
+  {
     "id": "2026-10-23",
     "date": "2026-10-23",
     "type": "daily",
